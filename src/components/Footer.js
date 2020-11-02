@@ -9,7 +9,7 @@ const Footer = () => {
         width: "100%"
     }
     return (
-        <div style={footerStil}>Alati i okviri za razvoj web aplikacija</div>
+        <div style={footerStil}>Alati i okviri za razvoj web aplikacija!</div>
     )
 }
 
