@@ -16,7 +16,7 @@ const App = (props) => {
     porukeServer
       .dohvatiSve()
       .then(pocPoruke => {
-        console.log("Podaci učitani");
+        console.log("Podaci su učitani");
         postaviPoruke(pocPoruke)
       })
   }, [])
@@ -71,7 +71,7 @@ const App = (props) => {
 
   return (
     <div>
-      <h1>Poruke</h1>
+      <h1>Poruke - Novo</h1>
       <div>
         <button onClick={() => postaviIspis(!ispisiSve)}>
           Prikaži {ispisiSve ? "samo važne" : "sve"}
