@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Poruka from './components/Poruka'
 import Footer from './components/Footer'
+import LoginForma from './components/LoginForma'
 import porukeServer from './services/poruke'
 import prijavaMetode from './services/login'
 
@@ -13,6 +14,7 @@ const App = (props) => {
   const [username, postaviUsername] = useState('')
   const [pass, postaviPass] = useState('')
   const [korisnik, postaviKorisnika] = useState(null)
+  const [loginVidljiv, postaviLoginVidljivost] = useState(false)
 
   useEffect(() => {
     console.log("Effect hook");
@@ -24,7 +26,7 @@ const App = (props) => {
       })
   }, [])
 
-  useEffect( () => {
+  useEffect(() => {
     const logiraniKorisnikJSON = window.localStorage.getItem('prijavljeniKorisnik')
     if (logiraniKorisnikJSON) {
       const korisnik = JSON.parse(logiraniKorisnikJSON)
@@ -104,6 +106,29 @@ const App = (props) => {
       <button type="submit">Spremi</button>
     </form>
   )
+
+  const loginForma = () => {
+    const sakrij = { display: loginVidljiv ? 'none' : '' }
+    const prikazi = { display: loginVidljiv ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={sakrij}>
+          <button onClick={() => postaviLoginVidljivost(true)}>Prijavi se</button>
+        </div>
+        <div style={prikazi}>
+          <LoginForma
+            username={username}
+            pass={pass}
+            promjenaImena={({ target }) => postaviUsername(target.value)}
+            promjenaLozinke={({ target }) => postaviUsername(target.value)}
+            userLogin={userLogin}
+          />
+          <button onClick={() => postaviLoginVidljivost(false)}>Odustani</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div>
