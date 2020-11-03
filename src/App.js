@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react'
 import Poruka from './components/Poruka'
 import Footer from './components/Footer'
 import porukeServer from './services/poruke'
+import prijavaMetode from './services/login'
 
 
 
 const App = (props) => {
-  //const { poruke } = props
   const [poruke, postaviPoruke] = useState([])
   const [unosPoruke, postaviUnos] = useState("...unesi poruku")
   const [ispisiSve, postaviIspis] = useState(true)
+  const [username, postaviUsername] = useState('')
+  const [pass, postaviPass] = useState('')
+  const [korisnik, postaviKorisnika] = useState(null)
 
   useEffect(() => {
     console.log("Effect hook");
@@ -19,6 +22,15 @@ const App = (props) => {
         console.log("Podaci su učitani");
         postaviPoruke(pocPoruke)
       })
+  }, [])
+
+  useEffect( () => {
+    const logiraniKorisnikJSON = window.localStorage.getItem('prijavljeniKorisnik')
+    if (logiraniKorisnikJSON) {
+      const korisnik = JSON.parse(logiraniKorisnikJSON)
+      postaviKorisnika(korisnik)
+      porukeServer.postaviToken(korisnik.token)
+    }
   }, [])
 
   console.log("Renderirano je", poruke.length, "objekata")
@@ -37,7 +49,7 @@ const App = (props) => {
       .stvori(noviObjekt)
       .then((response) => {
         console.log(response)
-        postaviPoruke(poruke.concat(response.data))
+        postaviPoruke(poruke.concat(response))
         postaviUnos('')
       })
 
@@ -68,10 +80,56 @@ const App = (props) => {
         postaviPoruke(poruke.filter(p => p.id !== id))
       })
   }
+  const userLogin = async (e) => {
+    e.preventDefault()
+    try {
+      const korisnik = await prijavaMetode.prijava({
+        username, pass
+      })
+      window.localStorage.setItem('prijavljeniKorisnik', JSON.stringify(korisnik))
+      porukeServer.postaviToken(korisnik.token)
+      postaviKorisnika(korisnik)
+      postaviUsername('')
+      postaviPass('')
+    } catch (exception) {
+      console.log(exception);
+      alert('Neispravni podaci')
+    }
+  }
+
+  const loginForma = () => (
+    <form onSubmit={userLogin}>
+      <div>
+        Korisničko ime:
+      <input type='text' value={username} name='Username'
+          onChange={(event) => postaviUsername(event.target.value)} />
+      </div>
+      <div>
+        Lozinka:
+    <input type='password' value={pass} name='Pass'
+          onChange={({ target }) => postaviPass(target.value)} />
+      </div>
+      <button type='submit'>Prijava</button>
+    </form>
+  )
+
+  const porukaForma = () => (
+    <form onSubmit={novaPoruka}>
+      <input value={unosPoruke} onChange={promjenaUnosa} />
+      <button type="submit">Spremi</button>
+    </form>
+  )
 
   return (
     <div>
       <h1>Poruke - Novo</h1>
+      {korisnik === null
+        ? loginForma()
+        : <div>
+          <p>Prijavljeni ste kao: {korisnik.ime}</p>
+          {porukaForma()}
+        </div>
+      }
       <div>
         <button onClick={() => postaviIspis(!ispisiSve)}>
           Prikaži {ispisiSve ? "samo važne" : "sve"}
@@ -86,10 +144,6 @@ const App = (props) => {
             promjenaVaznosti={() => promjenaVaznostiPoruke(p.id)} />
         )}
       </ul>
-      <form onSubmit={novaPoruka}>
-        <input value={unosPoruke} onChange={promjenaUnosa} />
-        <button type="submit">Spremi</button>
-      </form>
       <Footer />
     </div>
   )
