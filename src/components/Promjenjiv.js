@@ -1,4 +1,5 @@
 import React, { useState, useImperativeHandle } from 'react'
+import PropTypes from 'prop-types'
 
 const Promjenjiv = React.forwardRef((props, ref) => {
     const [vidljivo, postaviVidljivo] = useState(false)
@@ -28,4 +29,8 @@ const Promjenjiv = React.forwardRef((props, ref) => {
         </div>
     )
 })
+
+Promjenjiv.propTypes = {
+    natpis: PropTypes.string.isRequired
+}
 export default Promjenjiv

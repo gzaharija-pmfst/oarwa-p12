@@ -1,5 +1,5 @@
 import React from 'react'
-
+import PropTypes from 'prop-types'
 const LoginForma = ({
   userLogin,
   promjenaImena,
@@ -21,5 +21,12 @@ const LoginForma = ({
     <button type='submit'>Prijava</button>
   </form>
 )
+LoginForma.propTypes = {
+  userLogin: PropTypes.func.isRequired,
+  promjenaImena: PropTypes.func.isRequired,
+  promjenaLozinke: PropTypes.func.isRequired,
+  username : PropTypes.string.isRequired,
+  pass : PropTypes.string.isRequired
+}
 
 export default LoginForma
