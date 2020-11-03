@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Poruka from './components/Poruka'
 import Footer from './components/Footer'
 import LoginForma from './components/LoginForma'
 import porukeServer from './services/poruke'
 import prijavaMetode from './services/login'
-
+import Promjenjiv from './components/Promjenjiv'
+import PorukaForma from './components/PorukaForma'
 
 
 const App = (props) => {
   const [poruke, postaviPoruke] = useState([])
-  const [unosPoruke, postaviUnos] = useState("...unesi poruku")
   const [ispisiSve, postaviIspis] = useState(true)
   const [username, postaviUsername] = useState('')
   const [pass, postaviPass] = useState('')
   const [korisnik, postaviKorisnika] = useState(null)
-  const [loginVidljiv, postaviLoginVidljivost] = useState(false)
+
+  const porukaFormaRef = useRef()
 
   useEffect(() => {
     console.log("Effect hook");
@@ -39,26 +40,14 @@ const App = (props) => {
 
   const porukeZaIspis = ispisiSve ? poruke : poruke.filter(p => p.vazno === true)
 
-  const novaPoruka = (e) => {
-    e.preventDefault()
-    console.log("Klik", e.target);
-    const noviObjekt = {
-      sadrzaj: unosPoruke,
-      datum: new Date().toISOString(),
-      vazno: Math.random() > 0.5
-    }
+  const novaPoruka = (noviObjekt) => { 
+    porukaFormaRef.current.promjenaVidljivosti()
     porukeServer
       .stvori(noviObjekt)
       .then((response) => {
         console.log(response)
         postaviPoruke(poruke.concat(response))
-        postaviUnos('')
       })
-
-  }
-  const promjenaUnosa = (e) => {
-    console.log(e.target.value);
-    postaviUnos(e.target.value)
   }
 
   const promjenaVaznostiPoruke = (id) => {
@@ -101,32 +90,24 @@ const App = (props) => {
 
 
   const porukaForma = () => (
-    <form onSubmit={novaPoruka}>
-      <input value={unosPoruke} onChange={promjenaUnosa} />
-      <button type="submit">Spremi</button>
-    </form>
+    <Promjenjiv natpis='Nova poruka' ref={porukaFormaRef}>
+      <PorukaForma
+        spremiPoruku={novaPoruka}
+      />
+    </Promjenjiv>
   )
 
   const loginForma = () => {
-    const sakrij = { display: loginVidljiv ? 'none' : '' }
-    const prikazi = { display: loginVidljiv ? '' : 'none' }
-
     return (
-      <div>
-        <div style={sakrij}>
-          <button onClick={() => postaviLoginVidljivost(true)}>Prijavi se</button>
-        </div>
-        <div style={prikazi}>
-          <LoginForma
-            username={username}
-            pass={pass}
-            promjenaImena={({ target }) => postaviUsername(target.value)}
-            promjenaLozinke={({ target }) => postaviUsername(target.value)}
-            userLogin={userLogin}
-          />
-          <button onClick={() => postaviLoginVidljivost(false)}>Odustani</button>
-        </div>
-      </div>
+      <Promjenjiv natpis='Prijavi se'>
+        <LoginForma
+          username={username}
+          pass={pass}
+          promjenaImena={({ target }) => postaviUsername(target.value)}
+          promjenaLozinke={({ target }) => postaviPass(target.value)}
+          userLogin={userLogin}
+        />
+      </Promjenjiv>
     )
   }
 
