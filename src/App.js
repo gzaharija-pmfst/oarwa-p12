@@ -97,21 +97,6 @@ const App = (props) => {
     }
   }
 
-  const loginForma = () => (
-    <form onSubmit={userLogin}>
-      <div>
-        Korisničko ime:
-      <input type='text' value={username} name='Username'
-          onChange={(event) => postaviUsername(event.target.value)} />
-      </div>
-      <div>
-        Lozinka:
-    <input type='password' value={pass} name='Pass'
-          onChange={({ target }) => postaviPass(target.value)} />
-      </div>
-      <button type='submit'>Prijava</button>
-    </form>
-  )
 
   const porukaForma = () => (
     <form onSubmit={novaPoruka}>
