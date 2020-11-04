@@ -13,7 +13,7 @@ test('renderira sadrzaj', () => {
   const komponenta = render(
     <Poruka poruka={poruka} />
   )
-  //const li = komponenta.container.querySelector('li')
+  const li = komponenta.container.querySelector('li')
   //console.log(prettyDOM(li));
 
   //komponenta.debug()
