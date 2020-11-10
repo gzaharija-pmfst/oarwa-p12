@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom'
 
 const Pocetna = () => (
   <div>
@@ -22,43 +23,30 @@ const Korisnici = () => (
 )
 
 const App = () => {
-  const [stranica, postaviStranicu] = useState('pocetna')
-
-  const naStranicu = (stranica) => (event) => {
-    event.preventDefault()
-    postaviStranicu(stranica)
-  }
-
-  const sadrzaj = () => {
-    if (stranica === 'pocetna') {
-      return <Pocetna />
-    } else if (stranica === 'poruke') {
-      return <Poruke />
-    } else if (stranica === 'korisnici') {
-      return <Korisnici />
-    }
-  }
-
   const padding = {
     padding: 5
   }
 
   return (
-    <div style={padding} >
+    <Router>
       <div>
-        <a href="" onClick={naStranicu('pocetna')} style={padding} >
-          pocetna
-        </a>
-        <a href="" onClick={naStranicu('poruke')} style={padding}>
-          poruke
-        </a>
-        <a href="" onClick={naStranicu('korisnici')} style={padding}>
-          korisnici
-        </a>
+        <Link style={padding} to='/'>pocetna</Link>
+        <Link style={padding} to='/poruke'>poruke</Link>
+        <Link style={padding} to='/korisnici'>korisnici</Link>
       </div>
 
-      {sadrzaj()}
-    </div>
+      <Switch>
+        <Route path='/poruke'>
+          <Poruke />
+        </Route>
+        <Route path='/korisnici'>
+          <Korisnici />
+        </Route>
+        <Route path='/'>
+          <Pocetna />
+        </Route>
+      </Switch>
+    </Router>
   )
 }
 
