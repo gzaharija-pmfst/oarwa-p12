@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Switch, Route, Link, Redirect, useParams, useHistory } from 'react-router-dom'
+import { AppBar, Toolbar, IconButton, Container, Table, TableBody, TableCell, TableContainer, TableRow, Paper, TextField, Button } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 
 const Pocetna = () => (
   <div>
@@ -20,16 +22,25 @@ const Poruka = ({ poruke }) => {
   )
 }
 
-const Poruke = ({poruke}) => (
+const Poruke = ({ poruke }) => (
   <div>
     <h2>Poruke</h2>
-    <ul>
-      {poruke.map(p =>
-        <li key={p.id}>
-          <Link to={`/poruke/${p.id}`}>{p.sadrzaj}</Link>
-        </li>
-      )}
-    </ul>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableBody>
+          {poruke.map(p => (
+            <TableRow key={p.id}>
+              <TableCell>
+                <Link to={`/notes/${p.id}`}>{p.sadrzaj}</Link>
+              </TableCell>
+              <TableCell>
+                {p.korisnik}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   </div>
 )
 
@@ -55,17 +66,22 @@ const Login = (props) => {
 
   return (
     <div>
-    <h2>Prijava</h2>
-    <form onSubmit={prijava}>
-      <div>
-        username: <input />
-      </div>
-      <div>
-        password: <input type='password' />
-      </div>
-      <button type="submit">prijava</button>
-    </form>
-  </div>
+      <h2>Prijava</h2>
+      <form onSubmit={prijava}>
+        <div>
+          <TextField label="username" />
+        </div>
+        <div>
+          <TextField label="password" type='password' />
+        </div>
+        <br></br>
+        <div>
+          <Button variant="contained" color="primary" type="submit">
+            Prijava
+          </Button>
+        </div>
+      </form>
+    </div>
   )
 }
 
@@ -92,43 +108,68 @@ const App = () => {
   ])
   const [korisnik, postaviKorisnika] = useState(null)
 
+  const [info, postaviInfo] = useState(null)
+
   const login = (korisnik) => {
     postaviKorisnika(korisnik)
+    postaviInfo(`Dobrodošao ${korisnik}`)
+    setTimeout(() => {
+      postaviInfo(null)
+    }, 5000)
   }
   const padding = {
     padding: 5
   }
 
   return (
-    <Router>
+    <Container>
       <div>
-        <Link style={padding} to='/'>pocetna</Link>
-        <Link style={padding} to='/poruke'>poruke</Link>
-        <Link style={padding} to='/korisnici'>korisnici</Link>
-        {korisnik
-        ? <em>Prijavljen kao: {korisnik}</em>
-        : <Link style={padding} to='/login'>prijava</Link>
-        }
+        {(info &&
+          <Alert severity="success">
+            {info}
+          </Alert>
+        )}
       </div>
+      <Router>
+        <AppBar position="static">
+          <Toolbar>
+            <Button color="inherit" component={Link} to="/">
+              pocetna
+            </Button>
+            <Button color="inherit" component={Link} to="/poruke">
+              poruke
+            </Button>
+            <Button color="inherit" component={Link} to="/korisnici">
+              korisnici
+            </Button>
+            {korisnik
+              ? <em>Prijavljen kao: {korisnik}</em>
+              : <Button color="inherit" component={Link} to="/login">
+                Prijava
+                </Button>
+            }
+          </Toolbar>
+        </AppBar>
 
-      <Switch>
-        <Route path='/poruke/:id'>
-          <Poruka poruke={poruke} />
-        </Route>
-        <Route path='/poruke'>
-          <Poruke poruke={poruke} />
-        </Route>
-        <Route path='/korisnici'>
-          {korisnik ? <Korisnici /> : <Redirect to='/login' />}
-        </Route>
-        <Route path='/login'>
-          <Login onLogin={login} />
-        </Route>
-        <Route path='/'>
-          <Pocetna />
-        </Route>
-      </Switch>
-    </Router>
+        <Switch>
+          <Route path='/poruke/:id'>
+            <Poruka poruke={poruke} />
+          </Route>
+          <Route path='/poruke'>
+            <Poruke poruke={poruke} />
+          </Route>
+          <Route path='/korisnici'>
+            {korisnik ? <Korisnici /> : <Redirect to='/login' />}
+          </Route>
+          <Route path='/login'>
+            <Login onLogin={login} />
+          </Route>
+          <Route path='/'>
+            <Pocetna />
+          </Route>
+        </Switch>
+      </Router>
+    </Container>
   )
 }
 
